@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en" class="bg-gray-900 text-white">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Password Generator</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="flex items-center justify-center min-h-screen px-4">
+  <div class="w-full max-w-md bg-gray-800 rounded-2xl shadow-2xl p-6 space-y-6">
+    <h1 class="text-2xl font-bold text-center text-teal-400">🔐 Password Generator</h1>
+
+    <div>
+      <label class="block text-sm mb-2">Password Length</label>
+      <input type="range" min="4" max="100" value="16" id="lengthRange"
+        class="w-full accent-teal-500">
+      <div class="text-right text-xs mt-1 text-teal-300" id="lengthValue">16</div>
+    </div>
+
+    <div class="grid grid-cols-2 gap-4 text-sm text-gray-200">
+      <label><input type="checkbox" id="includeUpper" checked class="mr-2">Uppercase (A-Z)</label>
+      <label><input type="checkbox" id="includeLower" checked class="mr-2">Lowercase (a-z)</label>
+      <label><input type="checkbox" id="includeNumbers" checked class="mr-2">Numbers (0-9)</label>
+      <label><input type="checkbox" id="includeSymbols" checked class="mr-2">Symbols (!@#$%)</label>
+    </div>
+
+    <div class="relative">
+      <input
+        type="text"
+        id="passwordDisplay"
+        class="w-full px-4 py-3 rounded-xl text-gray-900 font-mono bg-gray-100"
+        readonly
+        placeholder="Your password will appear here"
+      />
+      <button
+        id="copyBtn"
+        class="absolute right-2 top-2 text-gray-600 hover:text-teal-500"
+        title="Copy"
+      >📋</button>
+    </div>
+
+    <button
+      onclick="generatePassword()"
+      class="w-full bg-teal-500 hover:bg-teal-600 text-white py-2 px-4 rounded-xl font-semibold transition duration-200"
+    >
+      Generate Password
+    </button>
+  </div>
+
+  <script>
+    const lengthRange = document.getElementById('lengthRange');
+    const lengthValue = document.getElementById('lengthValue');
+    const display = document.getElementById('passwordDisplay');
+    const copyBtn = document.getElementById('copyBtn');
+
+    lengthRange.addEventListener('input', () => {
+      lengthValue.textContent = lengthRange.value;
+    });
+
+    copyBtn.addEventListener('click', () => {
+      if (display.value !== "") {
+        navigator.clipboard.writeText(display.value);
+        copyBtn.textContent = "✅";
+        setTimeout(() => (copyBtn.textContent = "📋"), 1500);
+      }
+    });
+
+    function generatePassword() {
+      const length = +lengthRange.value;
+      const upper = document.getElementById('includeUpper').checked;
+      const lower = document.getElementById('includeLower').checked;
+      const numbers = document.getElementById('includeNumbers').checked;
+      const symbols = document.getElementById('includeSymbols').checked;
+
+      const upperChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+      const lowerChars = "abcdefghijklmnopqrstuvwxyz";
+      const numberChars = "0123456789";
+      const symbolChars = "!@#$%^&*()-_+=.,<>?|{}[]~`";
+
+      let charPool = "";
+      if (upper) charPool += upperChars;
+      if (lower) charPool += lowerChars;
+      if (numbers) charPool += numberChars;
+      if (symbols) charPool += symbolChars;
+
+      if (!charPool) {
+        display.value = "Please select at least one character type!";
+        return;
+      }
+
+      let password = "";
+      for (let i = 0; i < length; i++) {
+        const randIndex = Math.floor(Math.random() * charPool.length);
+        password += charPool[randIndex];
+      }
+
+      display.value = password;
+    }
+  </script>
+</body>
+</html>
